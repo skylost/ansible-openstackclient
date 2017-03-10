@@ -1,0 +1,6 @@
+---
+virtualenv_url: https://github.com/skylost/virtualenv/blob/master/openstack
+
+required_tarballs:
+  - keystoneclient
+  - openstackclient

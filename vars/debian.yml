@@ -1,0 +1,5 @@
+---
+required_packages:
+  - libyaml-0-2
+  - libxml2
+  - libxslt1.1

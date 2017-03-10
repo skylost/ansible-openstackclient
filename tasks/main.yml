@@ -1,0 +1,35 @@
+---
+- name: main | set os variables
+  include_vars: "{{ ansible_os_family | lower }}.yml"
+
+- name:  install | required packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: required_packages
+
+- name:  install | create directory
+  file:
+    path: /opt/venv/
+    state: directory
+    mode: 0755
+
+- name:  install | get tarball
+  get_url:
+    url: "{{ virtualenv_url }}/{{ item }}.tar.gz"
+    dest: "/tmp/{{ item }}.tar.gz"
+  with_items: required_tarballs
+
+- name:  install | unarchive
+  shell: "tar -xzvf /tmp/{{ item }}.tar.gz"
+  args:
+    chdir: /opt/venv
+    creates: "/opt/venv/{{ item.split('.')[0] }}"
+  with_items: required_tarballs
+
+- name: install | symlink openstackclient
+  file:
+    src: "/opt/venv/{{ item }}/bin/{{ item.split('.')[0] | regex_replace('client(.*)$', '\\1') }}"
+    dest: "/usr/bin/{{ item.split('.')[0] | regex_replace('client(.*)$', '\\1') }}"
+    state: link
+  with_items: required_tarballs
